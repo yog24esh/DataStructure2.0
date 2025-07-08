@@ -16,7 +16,7 @@ struct Node
 //Declarations
 struct Node *createSingleLinkList(struct Node *START);
 void displaysingleLinkList(struct Node *START);
-void countNode(struct Node *START);
+int countNode(struct Node *START);
 void searchData(struct Node *START, int Data);
 struct Node *addNodeAtPos(struct Node *START, int position, int data);
 struct Node *deleteNodeAtPos(struct Node *START, int position);
@@ -72,6 +72,9 @@ int main(int argc, char const *argv[])
             break;
         case 6:
             /* code */
+            int dataCase6;
+            printf("Enter Node position.\n");
+            scanf("%d",&dataCase6);
             START = deleteNodeAtPos(START,position);
             break;
         case 7:
@@ -124,7 +127,7 @@ void displaysingleLinkList(struct Node *START)
     
 }
 
-void countNode(struct Node *START)
+int countNode(struct Node *START)
 {
     struct Node *temp = START;
     int node = 0;
@@ -134,10 +137,25 @@ void countNode(struct Node *START)
         temp = temp->nextNode;
     }
     printf("Total Node  %d\n",node);
+    return node;
 }
 
 void searchData(struct Node *START, int Data)
 {
+    struct Node *ptr = START;
+	int pos = 1;
+	while(ptr!=NULL)
+	{
+		if(ptr->data==Data)
+		{
+			printf("Item %d found at position %d\n",Data,pos);
+			return;
+		}
+		ptr = ptr->nextNode;
+		pos++;
+	}
+	if(ptr == NULL)
+		printf("Item %d not found in list\n",Data);
 }
 
 struct Node *addNodeAtPos(struct Node *START, int position,int data)
@@ -168,10 +186,46 @@ struct Node *addNodeAtPos(struct Node *START, int position,int data)
 
 struct Node *deleteNodeAtPos(struct Node *START, int position)
 {
+    struct Node *tmp = START;
+    if(position==1){
+        START = tmp->nextNode;
+        free(tmp);
+    }
+    else{
+        for (int i = 1; i < position-1; i++)
+        {
+            /* code */
+            tmp = tmp->nextNode;
+        }
+        if (position==countNode(START)){
+            //for last node
+            tmp->nextNode=NULL;
+        }
+        else{
+            tmp->nextNode=tmp->nextNode->nextNode;
+        }
+        
+    }
     return START;
 }
 
 struct Node *reverseSingleLinkList(struct Node *START)
 {
+    struct Node *p1,*p2,*p3;
+	if(START->nextNode==NULL)  return START; 
+
+	p1=START;
+	p2=p1->nextNode;
+	p3=p2->nextNode;
+	p1->nextNode=NULL;
+	p2->nextNode=p1;
+	while(p3!=NULL)
+	{
+		p1=p2;
+		p2=p3;
+		p3=p3->nextNode;
+		p2->nextNode=p1;
+	}
+	START=p2;
     return START;
 }
