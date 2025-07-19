@@ -45,8 +45,10 @@
 
 */
 
-#include<stdio.h>
-#include<stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX_SIZE 100
+
 
 
 
@@ -57,11 +59,31 @@ struct btNode
     struct btNode *rchild;
 }*root =  NULL;
 
+struct btNode *stack[MAX_SIZE];
+int top = -1;
+struct btNode *queue[MAX_SIZE];
+int front = -1,rear = -1;
+
 //declaration
+struct btNode *makeTreeArraytoLinkList();
 void preOrderRecursiveTraversal(struct btNode *root);
 void inOrderRecursiveTraversal(struct btNode *root);
 void postOrderRecursiveTraversal(struct btNode *root);
-struct btNode *makeTreeArraytoLinkList();
+
+void preOrderNONRecursiveTraversal(struct btNode *root);
+void inOrderNONRecursiveTraversal(struct btNode *root);
+void postOrderNONRecursiveTraversal(struct btNode *root);
+void levelOrderTraversal(struct btNode *root);
+
+void push(struct btNode *n);
+struct btNode *pop();
+int isEmpty();
+int isFull();
+
+void enque(struct btNode *n);
+struct btNode *deque();
+int isEmptyQueue();
+int isFullQueue();
 
 
 
@@ -75,6 +97,13 @@ int main(){
     printf("\n");
     postOrderRecursiveTraversal(root);
     printf("\n");
+    preOrderNONRecursiveTraversal(root);
+    printf("\n");
+    inOrderNONRecursiveTraversal(root);
+    printf("\n");
+    postOrderNONRecursiveTraversal(root);
+    printf("\n");
+    levelOrderTraversal(root);
 }
 
 //NLR
@@ -105,6 +134,94 @@ void postOrderRecursiveTraversal(struct btNode *ptr)
     postOrderRecursiveTraversal(ptr->lchild);
     postOrderRecursiveTraversal(ptr->rchild);
     printf("%d ",ptr->data);
+    
+}
+
+void preOrderNONRecursiveTraversal(struct btNode *root)
+{
+    struct btNode *ptr = root;  
+
+    if(ptr == NULL) {
+        printf("Tree is empty\n");
+        exit(1);
+    }
+    push(ptr);
+    while (!isEmpty()){
+        ptr = pop();
+        if(ptr->data != 99) printf("%d ",ptr->data);
+        if(ptr->rchild!=NULL) push(ptr->rchild);
+        if(ptr->lchild!=NULL) push(ptr->lchild);
+    }
+}
+
+//LNR
+void inOrderNONRecursiveTraversal(struct btNode *root){
+    struct btNode *ptr = root;  
+    if(ptr == NULL) {
+        printf("Tree is empty\n");
+        exit(1);
+    }
+    while (1){
+        while (ptr->lchild!=NULL && ptr->lchild->data != 99){
+            push(ptr);
+            ptr = ptr->lchild;
+        }
+        while (ptr->rchild==NULL || ptr->rchild->data == 99){
+            printf("%d ",ptr->data);
+            if(isEmpty()) return;
+            ptr = pop();
+        }
+        printf("%d ",ptr->data);
+        ptr = ptr->rchild;
+        
+        
+    }
+    
+
+}
+
+//LRN
+void postOrderNONRecursiveTraversal(struct btNode *root){
+    struct btNode *ptr = root;  
+    struct btNode *l = root;   
+    
+    if(ptr == NULL) {
+        printf("Tree is empty\n");
+        exit(1);
+    }
+    while (1)
+    {
+        while (ptr->lchild!=NULL && ptr->lchild->data != 99 ){
+            push(ptr);
+            ptr = ptr->lchild;
+        }
+        while(ptr->rchild==NULL || ptr->rchild->data==99 || ptr->rchild == l){
+            printf("%d ",ptr->data);
+            l=ptr;
+            if(isEmpty()) return;
+            ptr = pop();
+        }
+        push(ptr);
+        ptr = ptr->rchild;
+    }
+    
+
+}
+
+void levelOrderTraversal(struct btNode *root)
+{
+    struct btNode *ptr = root;
+    if(ptr==NULL) return printf("Empty tree\n");
+    enque(ptr);
+    while (!isEmptyQueue())
+    {
+        ptr = deque();
+        printf("%d ",ptr->data);
+        if(ptr->lchild!=NULL && ptr->lchild->data!=99)enque(ptr->lchild);
+        if(ptr->rchild!=NULL && ptr->rchild->data!=99)enque(ptr->rchild);
+        
+    }
+    
     
 }
 
@@ -139,4 +256,65 @@ struct btNode *makeTreeArraytoLinkList()
     root = nodes[1]; //root node is at index 1
     return root;
 }
+
+void push(struct btNode *n){
+    if(isFull()){
+        printf("Stack Overflow");
+        exit(1);
+    }
+    top++;
+    stack[top]=n;
+}
+struct btNode *pop(){
+    if (isEmpty()){
+        return printf("Empty Stack");
+    }
+    return stack[top--];
+    
+}
+
+void enque(struct btNode *n)
+{
+    if(rear == MAX_SIZE-1) return printf("Queue overflow");
+    if(front == -1){
+        front=0;
+    }
+    rear++;
+
+    queue[rear]= n;
+
+}
+struct btNode *deque()
+{
+    struct btNode *ptr;
+    if(isEmptyQueue()){
+        return printf("Empty Queue");
+    }  
+    ptr = queue[front];
+    front++;
+    return ptr;
+}
+int isEmptyQueue()
+{
+    if(front==-1 || front==rear+1) return 1;
+    else return 0;
+}
+
+
+
+int isEmpty()
+{
+    if(top==-1) return 1;
+    else return 0;
+}
+int isFull(){
+    if(top==MAX_SIZE-1) return 1;
+    else return 0;
+}
+
+
+
+
+
+
 
