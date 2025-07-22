@@ -15,8 +15,10 @@ Traversal of Expression tree can be prefix, postfix or infix traversal.
 #include<stdio.h>
 #include <stdlib.h>
 
+
 #define ALGB_EXP (a-b*c)/(d+e/f)
 #define POST_ALGB_EXP "abc*-def/+/"
+#define PRE_ALGB_EXP "/-a*bc+d/ef"
 #define MAX_SIZE 100
 
 struct ExpressionTreeNode
@@ -35,12 +37,15 @@ int isEmpty();
 int isFull();
 
 struct ExpressionTreeNode *ExpressionTreeFromPostOrder(char str[] );
+struct ExpressionTreeNode *ExpressionTreeFromPreOrder(char str[] );
 void inOrderRecursiveTraversal(struct ExpressionTreeNode *ptr);
 
 int main(){
 
-    struct ExpressionTreeNode *root = ExpressionTreeFromPostOrder("abc*-def/+/");
+    // struct ExpressionTreeNode *root = ExpressionTreeFromPostOrder(POST_ALGB_EXP);
+    struct ExpressionTreeNode *root = ExpressionTreeFromPreOrder(PRE_ALGB_EXP);
     inOrderRecursiveTraversal(root);
+
     return 0;
 }
 
@@ -67,6 +72,38 @@ struct ExpressionTreeNode *ExpressionTreeFromPostOrder(char str[])
             push(node);
         }
         ++i;
+    }
+    
+    return root;
+}
+
+//  /-a*bc+d/ef   NLR
+struct ExpressionTreeNode *ExpressionTreeFromPreOrder(char str[])
+{
+    
+    int strLength = 0; 
+    for (; str[strLength] != '\0'; strLength++);
+
+    struct ExpressionTreeNode *root = NULL;
+    while (strLength>=0)
+    {
+        if(str[strLength]>='a' && str[strLength]<='z'){
+            struct ExpressionTreeNode *node = malloc(sizeof(struct ExpressionTreeNode));
+            node->c = str[strLength];
+            node->lChild = NULL;
+            node->rChild = NULL;
+            push(node);
+        }
+        else{
+            struct ExpressionTreeNode *node = malloc(sizeof(struct ExpressionTreeNode));            
+            root= node;
+            node->c = str[strLength];
+            node->lChild=pop();
+            node->rChild=pop();
+            push(node);
+
+        }
+        --strLength;
     }
     
     return root;
