@@ -1,2 +1,4 @@
 # DataStructure2.0
-Implementation using C
+
+Book = Data Structures through C in depth  
+Author = S.K. Srivastava, Deepali Srivastava  
